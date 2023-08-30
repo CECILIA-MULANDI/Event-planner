@@ -29,7 +29,7 @@ trait EventTrait{
     }
 trait EventsStoreTrait{
     fn add_to_store(ref self:EventsStore,event:Event);
-    fn display_events(ref self: EventsStore);
+    // fn display_events(ref self: EventsStore);
 }
 
 impl EventImpl of EventTrait {
@@ -48,19 +48,20 @@ impl EventsStoreImpl of EventsStoreTrait{
     fn add_to_store(ref self:EventsStore,event:Event){
         self.events.append(event);
     }
-     fn display_events(ref self: EventsStore){
-        // loop through each event
-        let event_in_array=self.events.len();
-        let mut i = 0;
+    //  fn display_events(ref self: EventsStore){
+    //     // loop through each event
+    //     let event_in_array=self.events.len();
+    //     let mut i = 0;
         
-        loop{
-            if i==event_in_array{
-                break;
-            }
-            *self.events.at(i).ticket_price.print();
-            i=i+1;
-        };
-     }
+    //     loop{
+    //         if i==event_in_array{
+    //             break;
+    //         }
+    //         *self.events.at(i).name.print();
+            
+    //         i=i+1;
+    //     };
+    //  }
    
 }
 fn main(){
@@ -77,6 +78,6 @@ fn main(){
     };
     added_event.add_to_store(new_event);
     added_event.events.len().print();
-    added_event.display_events();
+    // added_event.display_events();
    
 }
