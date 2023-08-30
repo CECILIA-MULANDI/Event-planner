@@ -2,7 +2,7 @@ use option::OptionTrait;
 use array::ArrayTrait;
 use debug::PrintTrait;
 // create a structure for an event
-#[derive(Drop)]
+#[derive(Copy,Drop)]
 struct Event{
     name:felt252,
     description:felt252,
@@ -10,74 +10,78 @@ struct Event{
     time:felt252,
     location:felt252,
     ticket_price:u16,
+    available_tickets:u16,
+}
+#[derive(Copy,Drop)]
+struct User{
+    username:felt252,
+    address:felt252,
 }
 // structure to store array of events
 #[derive(Drop)]
 struct EventsStore{
-    events:Array<Event>
+    events:Array<Event>,
+    users:Array<User>
 }
 // Event - {name,desc}
 
 // function to create an event
 trait EventTrait{
-    fn create_function(ref self:Event, name:felt252,
-    description:felt252,
-    date:felt252,
-    time:felt252,
-    location:felt252,
-    ticket_price:u16);
-    }
+    fn purchase_ticket(ref self:Event,price:u16);
+}
+    
 trait EventsStoreTrait{
     fn add_to_store(ref self:EventsStore,event:Event);
+    fn add_user(ref self:EventsStore,user:User);
     // fn display_events(ref self: EventsStore);
 }
 
 impl EventImpl of EventTrait {
-   fn create_function(ref self:Event, name:felt252,description:felt252,date:felt252,time:felt252, location:felt252,ticket_price:u16){
-    self.name=name;
-    self.description=description;
-    self.date=date;
-    self.time=time;
-    self.location=location;
-    self.ticket_price=ticket_price;
 
- }
+   fn purchase_ticket(ref self:Event,price:u16){
+    if self.available_tickets>0{
+        'sold'.print();
+        let mut remaining_tickets=self.available_tickets-1;
+        remaining_tickets.print()
+    }
+    'sold out'.print()
+   }
+
 } 
 
 impl EventsStoreImpl of EventsStoreTrait{
     fn add_to_store(ref self:EventsStore,event:Event){
         self.events.append(event);
     }
-    //  fn display_events(ref self: EventsStore){
-    //     // loop through each event
-    //     let event_in_array=self.events.len();
-    //     let mut i = 0;
+    // add the user to the database after creation
+    fn add_user(ref self:EventsStore,user:User){
+        let mut added_user=self.users.append(user);
         
-    //     loop{
-    //         if i==event_in_array{
-    //             break;
-    //         }
-    //         *self.events.at(i).name.print();
-            
-    //         i=i+1;
-    //     };
-    //  }
-   
+       
+        
+    }
+    
 }
 fn main(){
     // create an instance
 
     let mut new_event = Event{name:'Starknet hackathon',description:'best event ever ',
-    date:'23/10/2023', time:'4pm',location:'Nairobi,Kenya',ticket_price:2};
+    date:'23/10/2023', time:'4pm',location:'Nairobi,Kenya',ticket_price:2,available_tickets:0,};
     new_event.description.print();
+    new_event.purchase_ticket(2);
 
     // add the event created to the array of events
 
-    let mut added_event=EventsStore{
-        events:ArrayTrait::new()
+    let mut added_new_data=EventsStore{
+        events:ArrayTrait::new(),
+        users:ArrayTrait::new(),
     };
-    added_event.add_to_store(new_event);
-    added_event.events.len().print();
+    added_new_data.add_to_store(new_event);
+    added_new_data.events.len().print();
     // added_event.display_events();
+
+    // create an instance of the user
+    let mut new_user = User{username:'Cecilia',address:'0x12345'};
+    added_new_data.add_user(new_user);
    
 }
