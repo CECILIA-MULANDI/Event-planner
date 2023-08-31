@@ -44,7 +44,7 @@ impl EventImpl of EventTrait {
         let mut remaining_tickets=self.available_tickets-1;
         remaining_tickets.print()
     }
-    'sold out'.print()
+    'tickets sold out'.print()
    }
 
 } 
@@ -56,6 +56,7 @@ impl EventsStoreImpl of EventsStoreTrait{
     // add the user to the database after creation
     fn add_user(ref self:EventsStore,user:User){
         let mut added_user=self.users.append(user);
+        'user added'.print();
         
        
         
