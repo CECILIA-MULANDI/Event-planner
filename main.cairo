@@ -25,14 +25,16 @@ struct EventsStore{
 }
 // Event - {name,desc}
 
-// function to create an event
+
 trait EventTrait{
     fn purchase_ticket(ref self:Event,price:u16);
 }
+
     
 trait EventsStoreTrait{
     fn add_to_store(ref self:EventsStore,event:Event);
     fn add_user(ref self:EventsStore,user:User);
+    fn search_user(self:@EventsStore,username:felt252);
     // fn display_events(ref self: EventsStore);
 }
 
@@ -44,7 +46,7 @@ impl EventImpl of EventTrait {
         let mut remaining_tickets=self.available_tickets-1;
         remaining_tickets.print()
     }
-    'tickets sold out'.print()
+    'sold out'.print()
    }
 
 } 
@@ -56,13 +58,22 @@ impl EventsStoreImpl of EventsStoreTrait{
     // add the user to the database after creation
     fn add_user(ref self:EventsStore,user:User){
         let mut added_user=self.users.append(user);
-        'user added'.print();
+    }
+    fn search_user(self:@EventsStore,username:felt252){
+        let mut i =0;
         
-       
-        
+        loop {
+            let mut found_user:User=*self.users[i];
+            if found_user.username==username{
+                'user found'.print();
+                break;
+            }
+            i=i+1;
+        }
     }
     
 }
+
 fn main(){
     // create an instance
 
@@ -84,5 +95,6 @@ fn main(){
     // create an instance of the user
     let mut new_user = User{username:'Cecilia',address:'0x12345'};
     added_new_data.add_user(new_user);
+    added_new_data.search_user('Cecilia');
    
 }
