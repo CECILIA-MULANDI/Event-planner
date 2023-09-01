@@ -1,3 +1,5 @@
+// find out how to choose between <org and attendee>
+// figure out how access would be granted
 use option::OptionTrait;
 use array::ArrayTrait;
 use debug::PrintTrait;
@@ -16,6 +18,7 @@ struct Event{
 struct User{
     username:felt252,
     address:felt252,
+   
 }
 // structure to store array of events
 #[derive(Drop)]
@@ -35,7 +38,8 @@ trait EventsStoreTrait{
     fn add_to_store(ref self:EventsStore,event:Event);
     fn add_user(ref self:EventsStore,user:User);
     fn search_user(self:@EventsStore,username:felt252);
-    // fn display_events(ref self: EventsStore);
+    fn search_events(self:@EventsStore,name:felt252);
+    // fn display_all_events(self:@EventsStore);
 }
 
 impl EventImpl of EventTrait {
@@ -43,6 +47,7 @@ impl EventImpl of EventTrait {
    fn purchase_ticket(ref self:Event,price:u16){
     if self.available_tickets>0{
         'sold'.print();
+        'access granted'.print();
         let mut remaining_tickets=self.available_tickets-1;
         remaining_tickets.print()
     }
@@ -71,6 +76,20 @@ impl EventsStoreImpl of EventsStoreTrait{
             i=i+1;
         }
     }
+    fn search_events(self:@EventsStore,name:felt252){
+        let mut i = 0;
+        loop{
+            let found_event:Event=*self.events[i];
+            if found_event.name==name{
+                'event found'.print();
+                found_event.name.print();
+                break;
+            }
+            i=i+1;
+        }
+
+    }
+    
     
 }
 
@@ -90,7 +109,7 @@ fn main(){
     };
     added_new_data.add_to_store(new_event);
     added_new_data.events.len().print();
-    // added_event.display_events();
+    added_new_data.search_events('Starknet hackathon');
 
     // create an instance of the user
     let mut new_user = User{username:'Cecilia',address:'0x12345'};
