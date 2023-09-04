@@ -18,20 +18,29 @@ struct Event{
 struct User{
     username:felt252,
     address:felt252,
+    usertype:UserType,
+    
    
 }
+
 // structure to store array of events
 #[derive(Drop)]
 struct EventsStore{
     events:Array<Event>,
     users:Array<User>
 }
-// Event - {name,desc}
+#[derive(Copy,Drop)]
+enum UserType{
+    Organization:(),
+    Attendee:(),
+
+}
 
 
 trait EventTrait{
     fn purchase_ticket(ref self:Event,price:u16);
 }
+
 
     
 trait EventsStoreTrait{
@@ -54,7 +63,7 @@ impl EventImpl of EventTrait {
     'sold out'.print()
    }
 
-} 
+}
 
 impl EventsStoreImpl of EventsStoreTrait{
     fn add_to_store(ref self:EventsStore,event:Event){
@@ -71,6 +80,9 @@ impl EventsStoreImpl of EventsStoreTrait{
             let mut found_user:User=*self.users[i];
             if found_user.username==username{
                 'user found'.print();
+                username.print();
+                found_user.address.print();
+                found_user.usertype.print();
                 break;
             }
             i=i+1;
@@ -92,7 +104,21 @@ impl EventsStoreImpl of EventsStoreTrait{
     
     
 }
+impl ProcessUserTypeImpl of PrintTrait<UserType>{
+    fn print(self:UserType){
+        match self{
+           UserType::Organization(()) => {
+            'registered as organization'.print();
+                
+            },
+            UserType::Attendee(()) => {
+                'registered as attendee'.print();
+                
+            },
+        }
 
+    }
+}
 fn main(){
     // create an instance
 
@@ -108,11 +134,11 @@ fn main(){
         users:ArrayTrait::new(),
     };
     added_new_data.add_to_store(new_event);
-    added_new_data.events.len().print();
+    // added_new_data.events.len().print();
     added_new_data.search_events('Starknet hackathon');
 
     // create an instance of the user
-    let mut new_user = User{username:'Cecilia',address:'0x12345'};
+    let mut new_user = User{username:'Cecilia',address:'0x12345',usertype:UserType::Attendee(())};
     added_new_data.add_user(new_user);
     added_new_data.search_user('Cecilia');
    
