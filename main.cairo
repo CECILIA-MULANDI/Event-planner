@@ -39,6 +39,7 @@ enum UserType{
 
 trait EventTrait{
     fn purchase_ticket(ref self:Event,price:u16);
+     fn display_info(ref self: Event);
 }
 
 
@@ -48,7 +49,7 @@ trait EventsStoreTrait{
     fn add_user(ref self:EventsStore,user:User);
     fn search_user(self:@EventsStore,username:felt252);
     fn search_events(self:@EventsStore,name:felt252);
-    // fn display_all_events(self:@EventsStore);
+    fn  display_events(self:@EventsStore);
 }
 
 impl EventImpl of EventTrait {
@@ -62,6 +63,10 @@ impl EventImpl of EventTrait {
     }
     'sold out'.print()
    }
+    fn display_info(ref self: Event){
+        self.name.print();
+        self.ticket_price.print();
+    }
 
 }
 
@@ -101,9 +106,23 @@ impl EventsStoreImpl of EventsStoreTrait{
         }
 
     }
-    
-    
+     fn display_events(self:@EventsStore){
+        let len = self.events.len();
+        let mut i = 0;
+
+        loop {
+            if (i >= len) {
+                break;
+            }
+            let mut event: Event = *self.events[i];
+            event.display_info(); // event.ticket_price.print();
+            i += 1;
+        }
+    }
 }
+    
+    
+
 impl ProcessUserTypeImpl of PrintTrait<UserType>{
     fn print(self:UserType){
         match self{
@@ -124,6 +143,8 @@ fn main(){
 
     let mut new_event = Event{name:'Starknet hackathon',description:'best event ever ',
     date:'23/10/2023', time:'4pm',location:'Nairobi,Kenya',ticket_price:2,available_tickets:0,};
+      let mut new_event2 = Event{name:'Cairo hackathon',description:'best event ever ',
+    date:'23/10/2023', time:'4pm',location:'Nairobi,Kenya',ticket_price:9,available_tickets:0,};
     new_event.description.print();
     new_event.purchase_ticket(2);
 
@@ -134,6 +155,7 @@ fn main(){
         users:ArrayTrait::new(),
     };
     added_new_data.add_to_store(new_event);
+     added_new_data.add_to_store(new_event2);
     // added_new_data.events.len().print();
     added_new_data.search_events('Starknet hackathon');
 
@@ -141,5 +163,7 @@ fn main(){
     let mut new_user = User{username:'Cecilia',address:'0x12345',usertype:UserType::Attendee(())};
     added_new_data.add_user(new_user);
     added_new_data.search_user('Cecilia');
+    added_new_data.display_events();
+    added_new_data.display_events();
    
 }
