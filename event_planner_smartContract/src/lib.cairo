@@ -1,28 +1,31 @@
-fn main() -> felt252 {
-    fib(16)
-}
+#[starknet::contract]
 
-fn fib(mut n: felt252) -> felt252 {
-    let mut a: felt252 = 0;
-    let mut b: felt252 = 1;
-    loop {
-        if n == 0 {
-            break a;
-        }
-        n = n - 1;
-        let temp = b;
-        b = a + b;
-        a = temp;
+mod EventPlanner{
+    
+    #[storage]
+    struct Storage{
+        event:Event
     }
-}
 
-#[cfg(test)]
-mod tests {
-    use super::fib;
-
-    #[test]
-    #[available_gas(100000)]
-    fn it_works() {
-        assert(fib(16) == 987, 'it works!');
+    #[derive(Drop, starknet::Store)]
+    struct Event{
+        name:felt252,
+        description:felt252,
+        date:felt252,
+        time:felt252,
+        location:felt252,
+        ticket_price:u16,
+        available_tickets:u16,
+    }
+    #[external(v0)]
+    #[generate_trait]
+    impl EventTraitImpl of EventPlanner{
+        fn create_event(ref self:ContractState){
+            self.event.write(Event{name:'Starknet hackathon',description:'best event ever ',
+    date:'23/10/2023', time:'4pm',location:'Nairobi,Kenya',ticket_price:2,available_tickets:0,})
+        }
+        fn get_event(self:@ContractState){
+            self.event.read()
+        }
     }
 }
