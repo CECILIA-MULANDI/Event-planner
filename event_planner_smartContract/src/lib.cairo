@@ -4,11 +4,23 @@ mod EventPlanner{
     
     #[storage]
     struct Storage{
-        event:Event
+        event:Events
     }
 
+    #[event]
+    #[derive(Drop, starknet::Event)]
+    enum Event{
+        EventCreated:EventCreated
+
+    }
+     #[derive(Drop, starknet::Event)]
+     struct EventCreated{
+        message:felt252
+     }
+
     #[derive(Drop, starknet::Store)]
-    struct Event{
+    
+    struct Events{
         name:felt252,
         description:felt252,
         date:felt252,
@@ -21,11 +33,12 @@ mod EventPlanner{
     #[generate_trait]
     impl EventTraitImpl of EventPlanner{
         fn create_event(ref self:ContractState){
-            self.event.write(Event{name:'Starknet hackathon',description:'best event ever ',
-    date:'23/10/2023', time:'4pm',location:'Nairobi,Kenya',ticket_price:2,available_tickets:0,})
+            self.event.write(Events{name:'Starknet hackathon',description:'best event ever ',
+    date:'23/10/2023', time:'4pm',location:'Nairobi,Kenya',ticket_price:2,available_tickets:0,});
+            self.emit(Event::EventCreated(EventCreated{message:'event created'}));
         }
         fn get_event(self:@ContractState){
-            self.event.read()
+            self.event.read();
         }
     }
 }
